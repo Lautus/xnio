@@ -808,11 +808,11 @@ final class JsseSslConduitEngine {
     private boolean wrapCloseMessage() throws IOException {
         assert ! Thread.holdsLock(getUnwrapLock());
         assert Thread.holdsLock(getWrapLock());
-        if (sinkConduit.isWriteShutdown()) {
+        if (sinkConduit.isWriteShutdown() || isClosed()) {
             return true;
         }
-        final ByteBuffer buffer = sendBuffer.getResource();
         if (!engine.isOutboundDone() || !engine.isInboundDone()) {
+            final ByteBuffer buffer = sendBuffer.getResource();
             SSLEngineResult result;
             do {
                 if (!handleWrapResult(result = engineWrap(Buffers.EMPTY_BYTE_BUFFER, buffer), true)) {
